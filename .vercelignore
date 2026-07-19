@@ -1,4 +1,7 @@
-backend
 node_modules
 build
 venv
+backend/venv
+backend/uploads
+backend/.env
+**/__pycache__

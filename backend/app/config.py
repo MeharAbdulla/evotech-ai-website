@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     MONGODB_URI: str
     MONGODB_DB_NAME: str
 
+    # Storage backend for uploaded files:
+    #   "gridfs" -> store inside MongoDB (persists on Vercel/serverless) [default]
+    #   "disk"   -> local ./uploads directory (good for plain local dev)
+    #   S3 is used automatically instead if AWS_S3_BUCKET is set (see below).
+    STORAGE_BACKEND: str = "gridfs"
+
     # CORS Configurations
     # Include both localhost and 127.0.0.1 — browsers treat them as different origins
     ALLOWED_ORIGINS: list[str] = [

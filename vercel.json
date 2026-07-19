@@ -1,14 +1,21 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "web": {
-      "root": ".",
-      "framework": "create-react-app",
-      "buildCommand": "CI=false npm run build",
-      "outputDirectory": "build"
+  "framework": "create-react-app",
+  "buildCommand": "CI=false npm run build",
+  "outputDirectory": "build",
+  "build": {
+    "env": {
+      "REACT_APP_API_BASE_URL": "/api"
+    }
+  },
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "backend/**",
+      "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": { "service": "web" } }
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

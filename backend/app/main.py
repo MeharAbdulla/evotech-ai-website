@@ -11,6 +11,7 @@ from app.routes.projects import router as projects_router
 from app.routes.developers import router as developers_router
 from app.routes.services import router as services_router
 from app.routes.gigs import router as gigs_router
+from app.routes.uploads import router as uploads_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,14 +43,17 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all standard and custom headers
 )
 
-# Static Files — ensure the local uploads directory exists (used when S3 is not configured)
-import os
-os.makedirs("uploads", exist_ok=True)
-app.mount(
-    "/uploads",
-    StaticFiles(directory="uploads"),
-    name="uploads"
-)
+# Static Files — only used for the local "disk" storage backend.
+# On serverless hosts (e.g. Vercel) the filesystem is read-only, so we skip
+# this entirely; uploads are served from GridFS via the uploads router instead.
+if not settings.AWS_S3_BUCKET and settings.STORAGE_BACKEND.lower() == "disk":
+    import os
+    os.makedirs("uploads", exist_ok=True)
+    app.mount(
+        "/uploads",
+        StaticFiles(directory="uploads"),
+        name="uploads"
+    )
 
 # Routers
 app.include_router(auth_routes.router)
@@ -57,6 +61,7 @@ app.include_router(projects_router)
 app.include_router(developers_router)
 app.include_router(services_router)
 app.include_router(gigs_router)
+app.include_router(uploads_router)
 
 @app.get("/", tags=["Health Check"])
 async def root():

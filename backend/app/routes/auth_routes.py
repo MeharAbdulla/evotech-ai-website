@@ -10,7 +10,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/login")
 async def login(data: LoginRequest):
-    db = get_database()
+    db = await get_database()
 
     user = await db.users.find_one({"username": data.username})
 

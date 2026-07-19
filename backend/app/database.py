@@ -12,22 +12,24 @@ class DatabaseManager:
     async def connect_to_database(self):
         """
         Initializes the MongoDB Async Client pool.
-        Called during application startup.
+        Called during application startup and lazily on first use
+        (so it also works in serverless environments where the ASGI
+        lifespan startup event may not run, e.g. Vercel functions).
         """
+        if self.db is not None:
+            return
         try:
             logger.info("Connecting to MongoDB...")
             self.client = AsyncIOMotorClient(
                 settings.MONGODB_URI,
-                # Production pool configurations
-                maxPoolSize=100,
-                minPoolSize=10,
+                # Keep the pool small — serverless favours short-lived, low-count connections
+                maxPoolSize=10,
+                minPoolSize=0,
+                serverSelectionTimeoutMS=10000,
                 uuidRepresentation="standard"
             )
             self.db = self.client[settings.MONGODB_DB_NAME]
-            
-            # Verify connection by pinging the server
-            await self.client.admin.command('ping')
-            logger.info(f"Successfully connected to MongoDB database: '{settings.MONGODB_DB_NAME}'")
+            logger.info(f"MongoDB client initialised for database: '{settings.MONGODB_DB_NAME}'")
         except Exception as e:
             logger.error(f"Could not connect to MongoDB: {e}")
             raise e
@@ -45,8 +47,12 @@ class DatabaseManager:
 # Singleton instance to be used across routes and services
 db_manager = DatabaseManager()
 
-def get_database():
+async def get_database():
     """
-    Dependency helper function to retrieve the active database instance.
+    Dependency helper to retrieve the active database instance.
+    Lazily establishes the connection on first use so the app works
+    both under uvicorn (lifespan) and under serverless (no lifespan).
     """
+    if db_manager.db is None:
+        await db_manager.connect_to_database()
     return db_manager.db

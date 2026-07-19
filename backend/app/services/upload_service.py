@@ -25,6 +25,7 @@ class UploadService:
     def __init__(self, base_upload_dir: str = "uploads"):
         self.base_dir = Path(base_upload_dir).resolve()
         self.use_s3 = bool(settings.AWS_S3_BUCKET)
+        self.use_gridfs = (not self.use_s3) and settings.STORAGE_BACKEND.lower() == "gridfs"
         self._s3_client = None
 
     @property
@@ -51,7 +52,46 @@ class UploadService:
 
         if self.use_s3:
             return await self._save_to_s3(file, safe_category, safe_entity_id, safe_filename)
+        if self.use_gridfs:
+            return await self._save_to_gridfs(file, safe_category, safe_entity_id, safe_filename)
         return await self._save_to_disk(file, safe_category, safe_entity_id, safe_filename)
+
+    async def _save_to_gridfs(self, file: UploadFile, category: str, entity_id: str, filename: str) -> str:
+        """
+        Store the file inside MongoDB using GridFS. Returns a relative URL
+        (`/uploads/<file_id>`) that is served back by the uploads route.
+        This keeps uploaded assets persistent on serverless hosts (e.g. Vercel)
+        where the local filesystem is read-only/ephemeral.
+        """
+        from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+        from app.database import get_database
+
+        try:
+            db = await get_database()
+            bucket = AsyncIOMotorGridFSBucket(db)
+
+            await file.seek(0)
+            data = await file.read()
+
+            file_id = await bucket.upload_from_stream(
+                f"{category}/{entity_id}/{filename}",
+                data,
+                metadata={
+                    "contentType": file.content_type or "application/octet-stream",
+                    "category": category,
+                    "entity_id": entity_id,
+                    "filename": filename,
+                },
+            )
+
+            logger.info(f"Stored uploaded asset in GridFS: {file_id} ({filename})")
+            return f"/uploads/{file_id}"
+
+        except Exception as exc:
+            logger.error(f"GridFS upload failed for '{filename}': {exc}")
+            raise RuntimeError(f"Could not store file in database: {exc}") from exc
+        finally:
+            await file.close()
 
     async def _save_to_s3(self, file: UploadFile, category: str, entity_id: str, filename: str) -> str:
         key = f"{category}/{entity_id}/{filename}"
