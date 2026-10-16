@@ -1,0 +1,53 @@
+# Publish up to BLOG_DAILY_LIMIT SEO blog posts per UTC day via Aeromek API.
+# Requires GitHub secrets:
+#   BLOG_CRON_SECRET  — same value as Vercel BLOG_CRON_SECRET / CRON_SECRET
+#   BLOG_CRON_URL     — optional; defaults to production endpoint below
+name: Daily blog generation
+
+on:
+  schedule:
+    # Spread through the day so a single long fill is less likely to time out.
+    - cron: "0 2 * * *"
+    - cron: "0 8 * * *"
+    - cron: "0 14 * * *"
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "once = 1 post; fill = up to daily limit remaining"
+        required: true
+        default: fill
+        type: choice
+        options:
+          - fill
+          - once
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Call blog cron API
+        env:
+          BLOG_CRON_SECRET: ${{ secrets.BLOG_CRON_SECRET }}
+          BLOG_CRON_URL: ${{ secrets.BLOG_CRON_URL }}
+          MODE: ${{ github.event.inputs.mode || 'fill' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BLOG_CRON_SECRET:-}" ]; then
+            echo "Missing GitHub secret BLOG_CRON_SECRET" >&2
+            exit 1
+          fi
+          URL="${BLOG_CRON_URL:-https://aeromek.com/api/blog/cron/generate}"
+          echo "POST ${URL}?mode=${MODE}"
+          HTTP_CODE=$(curl -sS -o /tmp/blog-cron.json -w "%{http_code}" -X POST \
+            "${URL}?mode=${MODE}" \
+            -H "Authorization: Bearer ${BLOG_CRON_SECRET}" \
+            -H "Accept: application/json" \
+            --max-time 280)
+          echo "HTTP ${HTTP_CODE}"
+          head -c 2000 /tmp/blog-cron.json || true
+          echo
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            exit 1
+          fi

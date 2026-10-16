@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Application Configurations
-    APP_NAME: str = "Evotech AI Management System"
+    APP_NAME: str = "Aeromek Management System"
     DEBUG: bool = False
     ENV: str = "development"
     
@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://aeromek.com",
+        "https://www.aeromek.com",
+        "https://aeromek.vercel.app",
     ]
 
     # AWS S3 (optional) — when AWS_S3_BUCKET is set, uploads go to S3 instead of local disk.
@@ -31,6 +34,30 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = ""
     # Optional custom/CDN base URL (e.g. CloudFront). If empty, the default S3 URL is used.
     AWS_S3_PUBLIC_URL: str = ""
+
+    # Blog AI generation — prefer Z.ai (GLM), then Groq, then Gemini
+    ZAI_API_KEY: str = ""
+    ZAI_MODEL: str = "glm-4.5-flash"
+    GROQ_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    BLOG_PROVIDER: str = "auto"  # auto | zai | groq | gemini
+    # Blog cover images — Unsplash → Pixabay → Openverse/Wikimedia → local/seeded
+    UNSPLASH_ACCESS_KEY: str = ""
+    PIXABAY_API_KEY: str = ""
+    TICKETMASTER_API_KEY: str = ""
+    TICKETMASTER_API_SECRET: str = ""
+    BLOG_CRON_SECRET: str = ""
+    # Vercel Cron also sends Authorization: Bearer <CRON_SECRET>
+    CRON_SECRET: str = ""
+    # Auto-publish this many SEO posts per UTC day (GitHub Actions + optional Vercel cron)
+    BLOG_DAILY_LIMIT: int = 10
+
+    # Consultation form email (Gmail SMTP + app password)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_TO: str = ""
 
     # Automatically load from a .env file if it exists
     model_config = SettingsConfigDict(

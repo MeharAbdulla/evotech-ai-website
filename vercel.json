@@ -10,11 +10,43 @@
   },
   "functions": {
     "api/index.py": {
-      "includeFiles": "backend/**",
-      "maxDuration": 30
+      "includeFiles": "backend/app/**",
+      "maxDuration": 300
     }
   },
+  "crons": [
+    { "path": "/api/blog/cron/backfill-covers", "schedule": "30 3 * * 0" }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(js|css|woff2|png|jpg|jpeg|webp|svg|ico)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.aeromek.com" }],
+      "destination": "https://aeromek.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/seo/sitemap" },
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
