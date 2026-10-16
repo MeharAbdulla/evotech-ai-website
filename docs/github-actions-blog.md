@@ -1,12 +1,20 @@
 # Daily blogs via GitHub Actions (10/day)
 
+## Status: STOPPED
+
+Automated blog publishing is **off** (workflow disabled + schedule removed).
+
+To turn back on:
+1. Restore the `schedule` block in [`.github/workflows/blog-daily.yml`](../.github/workflows/blog-daily.yml)
+2. `gh workflow enable "Daily blog generation" --repo MeharAbdulla/evotech-ai-website`
+
 ## What’s set up
 
 - Workflow: [`.github/workflows/blog-daily.yml`](../.github/workflows/blog-daily.yml)
 - Repo: https://github.com/MeharAbdulla/evotech-ai-website
 - GitHub secrets: `BLOG_CRON_SECRET`, `BLOG_CRON_URL`
-- Schedule: 02:00 / 08:00 / 14:00 / 20:00 UTC (`mode=fill`)
-- Manual run: Actions → **Daily blog generation** → Run workflow
+- Schedule: removed (was 02:00 / 08:00 / 14:00 / 20:00 UTC)
+- Manual run: only after re-enabling the workflow
 
 ## Required on Vercel (aeromek / bots-projects)
 

@@ -1,22 +1,20 @@
-# Publish up to BLOG_DAILY_LIMIT SEO blog posts per UTC day via Aeromek API.
+# STOPPED — automated blog publishing is off.
+# Re-enable: restore `schedule` below, then:
+#   gh workflow enable "Daily blog generation" --repo MeharAbdulla/evotech-ai-website
+#
 # Requires GitHub secrets:
 #   BLOG_CRON_SECRET  — same value as Vercel BLOG_CRON_SECRET / CRON_SECRET
 #   BLOG_CRON_URL     — optional; defaults to production endpoint below
 name: Daily blog generation
 
 on:
-  schedule:
-    # Spread through the day so a single long fill is less likely to time out.
-    - cron: "0 2 * * *"
-    - cron: "0 8 * * *"
-    - cron: "0 14 * * *"
-    - cron: "0 20 * * *"
+  # schedule removed — blogs stopped
   workflow_dispatch:
     inputs:
       mode:
         description: "once = 1 post; fill = up to daily limit remaining"
         required: true
-        default: fill
+        default: once
         type: choice
         options:
           - fill
@@ -31,7 +29,7 @@ jobs:
         env:
           BLOG_CRON_SECRET: ${{ secrets.BLOG_CRON_SECRET }}
           BLOG_CRON_URL: ${{ secrets.BLOG_CRON_URL }}
-          MODE: ${{ github.event.inputs.mode || 'fill' }}
+          MODE: ${{ github.event.inputs.mode || 'once' }}
         run: |
           set -euo pipefail
           if [ -z "${BLOG_CRON_SECRET:-}" ]; then
