@@ -1,6 +1,6 @@
 {
-  "short_name": "Aeromek AI",
-  "name": "Aeromek AI — Computer Vision & Embedded Systems",
+  "short_name": "Aeromek LLC",
+  "name": "Aeromek LLC — Software & Technology Services",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#03050a",
-  "background_color": "#03050a"
+  "theme_color": "#f7f5f1",
+  "background_color": "#f7f5f1"
 }

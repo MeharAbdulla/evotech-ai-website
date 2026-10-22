@@ -1,10 +1,7 @@
-import { absoluteUrl } from "./seo/siteConfig";
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-/**
- * Lightweight smoke tests — full App render needs router + lazy chunks
- * and is covered by production build + live route checks.
- */
-test("canonical helper points at aeromek.com", () => {
-  expect(absoluteUrl("/privacy")).toBe("https://aeromek.com/privacy");
-  expect(absoluteUrl("/terms")).toBe("https://aeromek.com/terms");
+test("renders Aeromek LLC brand", () => {
+  render(<App />);
+  expect(screen.getAllByText(/Aeromek LLC/i).length).toBeGreaterThan(0);
 });

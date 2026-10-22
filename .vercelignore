@@ -12,3 +12,20 @@ public/hero-background.orig.mp4
 public/cv-projects/_raw
 .env.local
 *.pack
+
+# Landing site does not need marketing media
+Drones/
+public/ai-projects/
+public/cv-projects/
+public/drones/
+public/gigs/
+public/pcb/
+public/rc-planes/
+public/agents/
+public/media/
+public/hero-background.mp4
+Robotics_R&D_laboratory_manufact*.mp4
+reports/
+scripts/
+backend/
+api/

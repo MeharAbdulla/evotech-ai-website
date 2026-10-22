@@ -1,11 +1,10 @@
-/** Shared SEO constants for Aeromek. */
+/** Shared SEO constants for Aeromek LLC. */
 export const SITE_URL = "https://aeromek.com";
-export const SITE_NAME = "Aeromek AI";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/hero-poster.jpg`;
-export const DEFAULT_TITLE =
-  "Industrial Computer Vision & AI Engineering | Aeromek AI";
+export const SITE_NAME = "Aeromek LLC";
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/logo-transparent.png`;
+export const DEFAULT_TITLE = "Aeromek LLC | Software & Technology Services";
 export const DEFAULT_DESCRIPTION =
-  "Industrial computer vision, object detection, and AI camera systems for factories and warehouses — plus embedded, IoT, and PCB engineering.";
+  "Aeromek LLC provides software development, mobile and web applications, SaaS products, eSIM/travel connectivity services, and related technology services.";
 
 export function absoluteUrl(path = "/") {
   if (!path) return SITE_URL;
