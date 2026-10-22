@@ -10,8 +10,6 @@ import {
 const EMAIL = "info@aeromek.com";
 const PHONE_DISPLAY = "+1 5055288220";
 const PHONE_TEL = "+15055288220";
-const ADDRESS =
-  "Asgharabad Chak No 60 RB Khaimsinghwala Balochni Tehsil Jaranwala, District Faisalabad, 37250, Pakistan";
 
 export default function HomePage() {
   return (
@@ -102,10 +100,6 @@ export default function HomePage() {
                   <dt>Owner / director</dt>
                   <dd>Awais Murtaza — 100%</dd>
                 </div>
-                <div>
-                  <dt>Business address</dt>
-                  <dd>{ADDRESS}</dd>
-                </div>
               </dl>
             </div>
           </section>
@@ -122,10 +116,6 @@ export default function HomePage() {
                   <span className="llc-contact-label">Phone</span>
                   <span className="llc-contact-value">{PHONE_DISPLAY}</span>
                 </a>
-                <div className="llc-contact-item llc-contact-static">
-                  <span className="llc-contact-label">Address</span>
-                  <span className="llc-contact-value">{ADDRESS}</span>
-                </div>
               </div>
             </div>
           </section>
