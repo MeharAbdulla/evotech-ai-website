@@ -8,6 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.database import get_database
 from app.schemas.project_schema import ProjectCreate, ProjectUpdate, ProjectResponse
 from app.services.upload_service import UploadService
+from app.auth.deps import require_admin
 
 from pydantic import ValidationError
 
@@ -69,7 +70,8 @@ async def create_project(
     ] = [],
     zip_file: Optional[UploadFile] = File(None),
     pdf_document: Optional[UploadFile] = File(None),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     """Insert a new engineering project record with inline file assets directly into MongoDB."""
     
@@ -184,7 +186,8 @@ async def update_project(
     ] = [],
     zip_file: Optional[UploadFile] = File(None),
     pdf_document: Optional[UploadFile] = File(None),
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     """Modify an existing project record selectively using multipart Form and File inputs."""
     # 1. Validate ObjectId format
@@ -278,7 +281,11 @@ async def update_project(
     return map_project_document(updated_project)
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_project(id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def delete_project(
+    id: str,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
+):
     """Remove a project from the system ecosystem completely."""
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project ID format")
@@ -297,7 +304,8 @@ async def delete_project(id: str, db: AsyncIOMotorDatabase = Depends(get_databas
 async def upload_project_file(
     id: str, 
     file: UploadFile = File(...), 
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     """
     Upload and allocate system document assets (ZIP, diagrams, images) to a validated project context.

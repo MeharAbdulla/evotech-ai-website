@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: evotech-api
+    name: aeromek-api
     runtime: python
     rootDir: backend
     plan: free

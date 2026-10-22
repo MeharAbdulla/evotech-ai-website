@@ -12,7 +12,7 @@ export default function AdminLayout() {
       <div className="md:pl-64 flex flex-col min-h-screen">
         <Navbar />
 
-        <main className="flex-1 p-6 lg:p-8 overflow-y-auto max-w-[1600px] w-full mx-auto">
+        <main className="flex-1 p-4 pt-16 md:pt-6 md:p-6 lg:p-8 overflow-y-auto max-w-[1600px] w-full mx-auto">
           <Outlet />
         </main>
       </div>

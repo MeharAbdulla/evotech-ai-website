@@ -6,23 +6,23 @@ import { Briefcase, Factory, ShieldCheck, Handshake } from "lucide-react";
 const highlights = [
   {
     icon: FiCpu,
-    title: "Advanced AI & Robotics Engineering",
-    desc: "Deploying sophisticated neural network models directly onto edge devices and dynamic robotic platforms for realtime autonomous decision making."
+    title: "Workplace Computer Vision",
+    desc: "Object detection, CCTV AI, and camera systems for factories, warehouses, and sites — fire, PPE, parts, and live counting."
   },
   {
     icon: FiLayers,
-    title: "Industrial-Grade Embedded Systems",
-    desc: "Architecting microarchitectures and fault-tolerant firmware that endure intense physical operational environments with 99.99% uptime guarantees."
+    title: "Industrial Embedded Systems",
+    desc: "Firmware and microcontroller bring-up for sensors, controllers, and edge devices that must run reliably on site — ESP32, STM32, and custom boards."
   },
   {
     icon: FiShield,
-    title: "Scalable IoT Solutions",
-    desc: "End-to-end telemetry pipeline frameworks built to process multi-million packet streams securely while preserving power profiles on node metrics."
+    title: "IoT & Field Connectivity",
+    desc: "Sensor networks, gateways, and telemetry pipelines that collect reliable field data and connect camera or machine systems to operator tools."
   },
   {
     icon: FiGlobe,
-    title: "Global Engineering Standards",
-    desc: "Strict adherence to safety compliance models, modular ROS 2 protocols, and ISO certifications required by Tier 1 international partners."
+    title: "Robotics & Full Stack Delivery",
+    desc: "When vision needs machines and boards, we deliver robotics, PCB, and product builds to the same industrial standard."
   }
 ];
 
@@ -30,34 +30,34 @@ const statsData = [
   {
     id: 1,
     icon: Briefcase,
-    targetNumber: 150,
+    targetNumber: 20,
     suffix: "+",
-    title: "Projects Completed",
-    description: "Successfully delivered intelligent engineering solutions across multiple industries."
+    title: "Public Portfolio Projects",
+    description: "Demonstrated computer vision, PCB, robotics, and AI builds documented on this site."
   },
   {
     id: 2,
     icon: Factory,
-    targetNumber: 10,
+    targetNumber: 6,
     suffix: "+",
-    title: "Industries Served",
-    description: "Serving automation, healthcare, manufacturing, defense, agriculture, energy, and more."
+    title: "Industry Focus Areas",
+    description: "Manufacturing, warehousing, agriculture, inspection, security, and industrial IoT."
   },
   {
     id: 3,
     icon: ShieldCheck,
-    targetNumber: 8,
-    suffix: "+",
-    title: "Years of Engineering Excellence",
-    description: "Deep expertise in embedded systems, robotics, AI, firmware, and electronics."
+    targetNumber: 18,
+    suffix: "",
+    title: "Service Specializations",
+    description: "Dedicated landings for vision, YOLO, edge cameras, embedded, IoT, PCB, and more."
   },
   {
     id: 4,
     icon: Handshake,
-    targetNumber: 98,
-    suffix: "%",
-    title: "Client Satisfaction",
-    description: "Focused on quality, reliability, communication, and long-term partnerships."
+    targetNumber: 1,
+    suffix: "",
+    title: "Accountable Delivery Team",
+    description: "One engineering partner for cameras, models, boards, and integration — not a vendor chain."
   }
 ];
 
@@ -140,7 +140,7 @@ const About = () => {
               Corporate Capability
             </p>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-6">
-              Why Choose EVO Tech AI
+              Why Choose Aeromek
             </h2>
             <p className="text-slate-400 text-base sm:text-lg leading-relaxed mb-10 max-w-xl">
               We bridge the gap between advanced algorithmic abstract thinking and real-world industrial deployments. Our engineering groups architect deterministic hardware configurations capable of operating in dense environments without single points of failure.

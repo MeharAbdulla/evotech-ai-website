@@ -6,6 +6,10 @@
 !.env.example
 backend/.env
 backend/.env.*
+unsplach api.txt
+*unsplash*api*.txt
+pass
+/pass
 
 # ---------- Node / React (frontend) ----------
 /node_modules
@@ -37,3 +41,10 @@ yarn-error.log*
 .idea/
 
 .vercel
+
+# Large source archives / uncompressed media (deploy uses compressed public assets)
+projects documents.zip
+public/hero-background.orig.mp4
+public/cv-projects/_raw/
+.env*
+.blog-secrets.local

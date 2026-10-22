@@ -2,9 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
-  background-color: #0b0f19;
+  background-color: #000000;
   color: white;
   font-family: system-ui, sans-serif;
+  overflow-x: hidden;
+  min-width: 0;
+  /* Keep paint work lighter while scrolling */
+  text-rendering: optimizeSpeed;
+}
+
+/* Below-fold sections paint lazily — smoother long-page scroll */
+.cv-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 800px;
+}
+
+#root {
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Hide horizontal scrollbar on filter chips while keeping scroll */
+.scrollbar-thin {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  display: none;
 }

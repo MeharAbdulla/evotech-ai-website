@@ -5,7 +5,7 @@ import Footer from "./Footer";
 
 export default function PublicLayout() {
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-white font-sans antialiased">
+    <div className="min-h-screen bg-black text-slate-100 font-sans antialiased">
       <Navbar />
       <main>
         <Outlet />

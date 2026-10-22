@@ -50,7 +50,7 @@ const industriesData = [
     title: "Logistics & Supply Chain",
     description: "Autonomous warehouse mobile robots (AMRs), automated inventory sortation nodes, real-time asset telemetry tracking, and localized cold-chain IoT arrays.",
     icon: FiTruck,
-    gradient: "from-amber-500 to-orange-500"
+    gradient: "from-sky-500 to-orange-500"
   },
   {
     id: 6,

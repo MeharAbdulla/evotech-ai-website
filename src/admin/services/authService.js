@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000';
 const LOGIN_ENDPOINT = '/auth/login';
-const TOKEN_KEY = 'evotech_ai_admin_token';
+const TOKEN_KEY = 'aeromek_admin_token';
 
 // Configure standalone non-intercepted instance for the login terminal itself
 const authClient = axios.create({
@@ -16,7 +16,7 @@ const authClient = axios.create({
 });
 
 /**
- * Enterprise Authentication Service for EVOTECH AI Management System.
+ * Enterprise Authentication Service for AEROMEK Management System.
  * Manages secure login API connectivity and localized token state isolation.
  */
 const authService = {
@@ -57,7 +57,7 @@ const authService = {
   window.dispatchEvent(new Event('auth-change'));
 
   // Notify ToastProvider
-  window.dispatchEvent(new Event('evotech_auth_logout'));
+  window.dispatchEvent(new Event('aeromek_auth_logout'));
 },
 
   /**
@@ -94,13 +94,14 @@ const authService = {
     const decoded = this.decodeToken(token);
     if (!decoded || !decoded.exp) {
       this.removeToken();
+      window.dispatchEvent(new Event('auth-change'));
       return false;
     }
 
     const isExpired = decoded.exp * 1000 < Date.now();
     if (isExpired) {
-      // Direct call ensures the sync state mutation doesn't cycle endlessly
       this.removeToken();
+      window.dispatchEvent(new Event('auth-change'));
       return false;
     }
 

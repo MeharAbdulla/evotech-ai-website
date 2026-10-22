@@ -193,7 +193,7 @@ const TestimonialsCaseStudies = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none" />
                 
                 {/* Rating Score Layer */}
-                <div className="flex gap-1 text-amber-400 mb-4">
+                <div className="flex gap-1 text-sky-400 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <FiStar key={i} className="fill-current w-3.5 h-3.5" />
                   ))}

@@ -24,6 +24,13 @@ const developerService = {
   async deleteDeveloper(id) {
     await apiClient.delete(`/developers/${id}`);
   },
+
+  async reorderDevelopers(orderedIds) {
+    const response = await apiClient.put("/developers/reorder", {
+      ordered_ids: orderedIds,
+    });
+    return response.data;
+  },
 };
 
 export default developerService;

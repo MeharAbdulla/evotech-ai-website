@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import authService from '../services/authService';
+import authService from "../services/authService";
+
 export default function ProtectedRoute({ children }) {
-  const [authenticated, setAuthenticated] = useState(
+  const [authenticated, setAuthenticated] = useState(() =>
     authService.isAuthenticated()
   );
 
@@ -12,10 +13,7 @@ export default function ProtectedRoute({ children }) {
     };
 
     window.addEventListener("auth-change", handleAuthChange);
-
-    return () => {
-      window.removeEventListener("auth-change", handleAuthChange);
-    };
+    return () => window.removeEventListener("auth-change", handleAuthChange);
   }, []);
 
   if (!authenticated) {

@@ -20,8 +20,8 @@ export default function ToastProvider() {
       }, 4000);
     };
 
-    window.addEventListener('evotech_auth_logout', handleLogoutToast);
-    return () => window.removeEventListener('evotech_auth_logout', handleLogoutToast);
+    window.addEventListener('aeromek_auth_logout', handleLogoutToast);
+    return () => window.removeEventListener('aeromek_auth_logout', handleLogoutToast);
   }, []);
 
   if (toasts.length === 0) return null;

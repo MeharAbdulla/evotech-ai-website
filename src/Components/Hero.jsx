@@ -1,108 +1,132 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowRight, FiCompass } from "react-icons/fi";
 
 const Hero = () => {
-  // SVG grid pattern used as a data URI background
-  const gridSvg = `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='rgba(56, 189, 248, 0.04)' stroke-width='1'/%3E%3C/svg%3E")`;
+  const [videoReady, setVideoReady] = useState(false);
+  const [allowVideo, setAllowVideo] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setAllowVideo(mq.matches && !reduce.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    reduce.addEventListener?.("change", update);
+    return () => {
+      mq.removeEventListener?.("change", update);
+      reduce.removeEventListener?.("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!allowVideo || !videoRef.current) return undefined;
+    const el = videoRef.current;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [allowVideo]);
 
   return (
     <div
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0b0f19] text-white font-sans antialiased pt-20 px-6"
+      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-[#03050a] text-white font-sans antialiased pt-20 sm:pt-24 px-4 sm:px-6"
     >
-      {/* Subtle Digital Grid Overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: gridSvg }}
+      <img
+        src="/hero-poster.jpg"
+        alt=""
+        aria-hidden
+        width={1920}
+        height={1080}
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover"
       />
+      {allowVideo && (
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+            videoReady ? "opacity-100" : "opacity-0"
+          }`}
+          src="/hero-background.mp4"
+          poster="/hero-poster.jpg"
+          muted
+          loop
+          playsInline
+          preload="none"
+          onCanPlay={() => setVideoReady(true)}
+        />
+      )}
 
-      {/* Futuristic Ambient Glow Rings */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none animate-pulse duration-[6000ms]" />
-      <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-500/5 blur-[100px] pointer-events-none" />
+      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-[#03050a]/95" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,_transparent_0%,_rgba(0,0,0,0.35)_75%)]" />
 
-      {/* Main Container */}
-      <div className="relative max-w-4xl mx-auto text-center z-10 flex flex-col items-center">
-        
-        {/* Decorative Eyebrow Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2 bg-slate-950/60 backdrop-blur-md border border-cyan-500/20 px-3.5 py-1.5 rounded-full mb-6 shadow-[0_0_15px_rgba(56,189,248,0.1)]"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-ping" />
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#38bdf8]">
-            AI · Robotics · Embedded · IoT
-          </span>
-        </motion.div>
+      <div className="relative max-w-5xl mx-auto text-center z-10 flex flex-col items-center">
+        <motion.img
+          initial={{ opacity: 0, y: 18, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          src="/logo-transparent.png"
+          alt="Aeromek AI"
+          width={400}
+          height={160}
+          className="w-[200px] sm:w-[320px] md:w-[400px] h-auto object-contain mb-6 sm:mb-8 drop-shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
+        />
 
-        {/* Primary Hero Heading */}
         <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] text-white"
-        >
-          We build{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] via-cyan-400 to-blue-500">
-            intelligent machines
-          </span>{" "}
-          for real industry
-        </motion.h1>
-
-        {/* Technical Subheading Statement */}
-        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 text-slate-400 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl font-normal"
+          transition={{ duration: 0.65, delay: 0.12 }}
+          className="text-2xl sm:text-4xl md:text-[2.75rem] font-extrabold tracking-tight leading-[1.15] text-white max-w-3xl drop-shadow-[0_6px_28px_rgba(0,0,0,0.7)]"
         >
-          EVO Tech AI designs and delivers AI systems, robots, firmware, and IoT products —
-          from concept and prototype to a system you can run in production.
-        </motion.p>
+          Workplace vision AI that sees what matters
+        </motion.h1>
 
-        {/* Dual CTA Action Buttons */}
-        <motion.div
+        <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto"
+          transition={{ duration: 0.6, delay: 0.22 }}
+          className="mt-4 sm:mt-5 text-slate-200/95 text-sm sm:text-lg leading-relaxed max-w-2xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.75)] px-1"
+        >
+          Industrial computer vision and AI camera systems for factories, warehouses,
+          and sites — object detection, inspection, and safety monitoring you can pilot
+          on real cameras.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.32 }}
+          className="mt-10 flex flex-col sm:flex-row gap-3.5 items-center justify-center w-full sm:w-auto"
         >
           <Link
             to="/contact"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#38bdf8] to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm px-7 py-4 rounded-xl shadow-[0_4px_25px_rgba(56,189,248,0.25)] hover:shadow-[0_4px_35px_rgba(56,189,248,0.4)] transition-all duration-300 transform hover:-translate-y-0.5 group"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-sm px-8 py-4 rounded-xl shadow-[0_8px_32px_rgba(56,189,248,0.35)] transition-all duration-300 hover:-translate-y-0.5 group"
           >
-            Start a project
-            <FiArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+            Discuss Your Computer Vision Project
+            <FiArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
-
           <Link
-            to="/projects"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900/60 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 text-slate-200 hover:text-white font-semibold text-sm px-7 py-4 rounded-xl transition-all duration-300 group"
+            to="/services/computer-vision"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-white/20 hover:border-sky-400/50 text-white font-semibold text-sm px-8 py-4 rounded-xl backdrop-blur-sm bg-white/5 hover:bg-white/10 transition-all duration-300"
           >
-            <FiCompass className="w-4 h-4 text-[#38bdf8] group-hover:rotate-45 transition-transform duration-300" />
-            See our projects
+            <FiCompass className="w-4 h-4 text-sky-400" />
+            Computer vision services
           </Link>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 font-mono tracking-widest uppercase"
-        >
-          <span>AI Vision</span>
-          <span>Robotics</span>
-          <span>Firmware</span>
-          <span>IoT</span>
-          <span>Drones</span>
-        </motion.div>
-        
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
     </div>
   );
 };

@@ -51,6 +51,8 @@ class DeveloperCreate(BaseModel):
 
     profile_image: Optional[str] = None
 
+    sort_order: int = 0
+
 
 
 class DeveloperUpdate(BaseModel):
@@ -79,6 +81,8 @@ class DeveloperUpdate(BaseModel):
 
     profile_image: Optional[str] = None
 
+    sort_order: Optional[int] = None
+
 
 
 class DeveloperResponse(BaseModel):
@@ -105,6 +109,8 @@ class DeveloperResponse(BaseModel):
     linkedin_url: Optional[HttpUrl] = None
 
     status: str
+
+    sort_order: int = 0
 
     created_at: datetime
 

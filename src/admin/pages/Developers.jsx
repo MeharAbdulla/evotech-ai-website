@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { FiPlus, FiEdit2, FiTrash2, FiAlertCircle, FiUsers } from "react-icons/fi";
+import {
+  FiPlus,
+  FiEdit2,
+  FiTrash2,
+  FiAlertCircle,
+  FiUsers,
+  FiChevronUp,
+  FiChevronDown,
+} from "react-icons/fi";
 import developerService from "../services/developerService";
 import DeveloperForm from "../components/DeveloperForm";
 
@@ -19,10 +27,15 @@ function formatError(err) {
   return detail || err.message || "Request failed";
 }
 
+function sortByOrder(list) {
+  return [...list].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+}
+
 export default function Developers() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reordering, setReordering] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState(null);
 
@@ -31,7 +44,7 @@ export default function Developers() {
     setError("");
     try {
       const data = await developerService.getDevelopers();
-      setItems(Array.isArray(data) ? data : []);
+      setItems(sortByOrder(Array.isArray(data) ? data : []));
     } catch (err) {
       setError(formatError(err));
     } finally {
@@ -73,6 +86,28 @@ export default function Developers() {
     }
   };
 
+  const moveItem = async (index, direction) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= items.length) return;
+
+    const next = [...items];
+    const [moved] = next.splice(index, 1);
+    next.splice(nextIndex, 0, moved);
+    const previous = items;
+    setItems(next);
+    setReordering(true);
+    setError("");
+    try {
+      const updated = await developerService.reorderDevelopers(next.map((item) => item.id));
+      setItems(sortByOrder(Array.isArray(updated) ? updated : next));
+    } catch (err) {
+      setItems(previous);
+      setError(formatError(err));
+    } finally {
+      setReordering(false);
+    }
+  };
+
   if (showCreate) {
     return (
       <div className="space-y-4">
@@ -97,7 +132,7 @@ export default function Developers() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-slate-100">Team</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage team member photos and details shown on the public Team page.
+            Manage team members and use the arrows to set the order on the public Team page.
           </p>
         </div>
         <button
@@ -119,6 +154,7 @@ export default function Developers() {
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-900/80 text-[11px] uppercase tracking-wider text-slate-500">
               <tr>
+                <th className="px-4 py-3 w-24">Order</th>
                 <th className="px-4 py-3">Photo</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Role</th>
@@ -129,10 +165,35 @@ export default function Developers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const photo = resolveImageUrl(item.profile_image);
                 return (
                   <tr key={item.id} className="bg-slate-950/40 hover:bg-slate-900/50">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-slate-500 w-5 tabular-nums">{index + 1}</span>
+                        <button
+                          type="button"
+                          disabled={reordering || index === 0}
+                          onClick={() => moveItem(index, -1)}
+                          className="p-1.5 rounded-md text-slate-400 hover:text-indigo-300 hover:bg-slate-900 disabled:opacity-30 disabled:pointer-events-none"
+                          title="Move up"
+                          aria-label={`Move ${item.name} up`}
+                        >
+                          <FiChevronUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={reordering || index === items.length - 1}
+                          onClick={() => moveItem(index, 1)}
+                          className="p-1.5 rounded-md text-slate-400 hover:text-indigo-300 hover:bg-slate-900 disabled:opacity-30 disabled:pointer-events-none"
+                          title="Move down"
+                          aria-label={`Move ${item.name} down`}
+                        >
+                          <FiChevronDown className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       {photo ? (
                         <img
@@ -152,16 +213,24 @@ export default function Developers() {
                     </td>
                     <td className="px-4 py-3 text-slate-400">{item.role}</td>
                     <td className="px-4 py-3 text-slate-400">{item.experience || "—"}</td>
-                    <td className="px-4 py-3"><StatusPill status={item.status} /></td>
+                    <td className="px-4 py-3">
+                      <StatusPill status={item.status} />
+                    </td>
                     <td className="px-4 py-3 text-slate-500 text-xs max-w-xs truncate">
                       {(item.skills || []).join(", ")}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => setEditing(item)} className="p-2 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-900">
+                        <button
+                          onClick={() => setEditing(item)}
+                          className="p-2 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-900"
+                        >
                           <FiEdit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-900">
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-900"
+                        >
                           <FiTrash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -200,8 +269,8 @@ function StatusPill({ status }) {
     status === "Active" || status === "Available"
       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
       : status === "Busy"
-      ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-      : "bg-slate-800 text-slate-400 border-slate-700";
+        ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+        : "bg-slate-800 text-slate-400 border-slate-700";
   return (
     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs border ${tone}`}>
       {status || "—"}

@@ -16,6 +16,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import ValidationError
 
 from app.database import get_database
+from app.auth.deps import require_admin
 from app.schemas.developer_schema import (
     DeveloperCreate,
     DeveloperUpdate,
@@ -42,6 +43,8 @@ def map_developer_document(doc: dict) -> DeveloperResponse:
     if doc and "_id" in doc:
         doc["id"] = str(doc["_id"])
 
+    doc.setdefault("sort_order", 0)
+
     # Ensure we sanitize fields that might have stored un-serializable values (e.g. "string", "")
     for field in ["github_url", "linkedin_url"]:
         if field in doc:
@@ -66,8 +69,7 @@ async def get_developers(
     """
 
     cursor = db["developers"].find().sort(
-        "created_at",
-        -1
+        [("sort_order", 1), ("created_at", 1)]
     )
 
     developers = await cursor.to_list(length=100)
@@ -119,6 +121,35 @@ async def get_developer(
 
 
 # =====================================================
+# REORDER DEVELOPERS
+# =====================================================
+
+@router.put("/reorder", response_model=List[DeveloperResponse])
+async def reorder_developers(
+    payload: dict,
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
+):
+    """Persist Team page order. Body: { ordered_ids: [id1, id2, ...] }"""
+    ordered_ids = payload.get("ordered_ids") if isinstance(payload, dict) else None
+    if not isinstance(ordered_ids, list) or not ordered_ids:
+        raise HTTPException(status_code=400, detail="ordered_ids must be a non-empty list")
+
+    for index, raw_id in enumerate(ordered_ids):
+        if not ObjectId.is_valid(str(raw_id)):
+            raise HTTPException(status_code=400, detail=f"Invalid developer ID: {raw_id}")
+        await db["developers"].update_one(
+            {"_id": ObjectId(str(raw_id))},
+            {"$set": {"sort_order": index, "updated_at": datetime.now(UTC)}},
+        )
+
+    cursor = db["developers"].find().sort([("sort_order", 1), ("created_at", 1)])
+    developers = await cursor.to_list(length=100)
+    return [map_developer_document(dev) for dev in developers]
+
+
+
+# =====================================================
 # CREATE DEVELOPER WITH PROFILE IMAGE
 # =====================================================
 
@@ -148,11 +179,13 @@ async def create_developer(
         alias="status"
     ),
 
+    sort_order: Optional[int] = Form(None),
+
     profile_image: Optional[UploadFile] = File(None),
 
 
-    db: AsyncIOMotorDatabase = Depends(get_database)
-
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
 
 
@@ -223,7 +256,9 @@ async def create_developer(
 
     now = datetime.now(UTC)
 
-
+    if sort_order is None:
+        last = await db["developers"].find().sort("sort_order", -1).limit(1).to_list(1)
+        sort_order = (last[0].get("sort_order", -1) + 1) if last else 0
 
     developer_document = {
     "_id": developer_id,
@@ -242,6 +277,7 @@ async def create_developer(
         if validation.linkedin_url else None,
 
     "status": developer_status,
+    "sort_order": int(sort_order),
 
     "created_at": now,
     "updated_at": now
@@ -299,12 +335,13 @@ async def update_developer(
         alias="status"
     ),
 
+    sort_order: Optional[int] = Form(None),
 
     profile_image: Optional[UploadFile] = File(None),
 
 
-    db: AsyncIOMotorDatabase = Depends(get_database)
-
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
 
 
@@ -343,7 +380,8 @@ async def update_developer(
         "experience": experience,
         "github_url": github_url,
         "linkedin_url": linkedin_url,
-        "status": developer_status
+        "status": developer_status,
+        "sort_order": sort_order,
     }
 
     # Filter incoming values to ignore unset, None, blank strings, empty lists, and Swagger defaults ("string")
@@ -472,8 +510,8 @@ async def delete_developer(
 
     id: str,
 
-    db: AsyncIOMotorDatabase = Depends(get_database)
-
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
 
 

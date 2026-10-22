@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class UploadService:
     """
     A generic file upload service for domain entities (Projects, Developers,
-    Gigs, etc.) within the EVOTECH AI ecosystem.
+    Gigs, etc.) within the AEROMEK ecosystem.
 
     Storage backend is chosen automatically:
       - If AWS S3 settings are configured, files are uploaded to S3 and a full

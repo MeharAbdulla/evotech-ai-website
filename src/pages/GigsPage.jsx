@@ -1,10 +1,16 @@
 import React from "react";
 import PageHero from "../Components/PageHero";
+import Seo from "../Components/Seo";
 import Gigs from "../Components/Gigs";
 
 export default function GigsPage() {
   return (
     <>
+      <Seo
+        title="Open Engineering Gigs"
+        description="Short- and mid-term engineering gigs for AI, computer vision, embedded systems, and hardware projects."
+        path="/gigs"
+      />
       <PageHero
         eyebrow="Gigs"
         title="Open work opportunities"

@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#05070d"/>
+  <circle cx="700" cy="380" r="160" fill="#0284c7" fill-opacity="0.12"/>
+  <rect x="160" y="100" width="480" height="280" rx="24" fill="#0a1220" stroke="#38bdf8" stroke-opacity="0.4" stroke-width="2"/>
+  <rect x="200" y="140" width="120" height="80" rx="12" fill="#0ea5e9" fill-opacity="0.2" stroke="#38bdf8"/>
+  <rect x="340" y="140" width="120" height="80" rx="12" fill="#0ea5e9" fill-opacity="0.12" stroke="#38bdf8" stroke-opacity="0.5"/>
+  <rect x="480" y="140" width="120" height="80" rx="12" fill="#0ea5e9" fill-opacity="0.08" stroke="#38bdf8" stroke-opacity="0.35"/>
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#334155"/>
+  <rect x="200" y="280" width="280" height="14" rx="7" fill="#334155"/>
+  <rect x="200" y="310" width="320" height="14" rx="7" fill="#1e293b"/>
+  <text x="400" y="430" text-anchor="middle" fill="#e0f2fe" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">AI CRM System</text>
+</svg>

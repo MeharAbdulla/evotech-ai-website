@@ -7,6 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import ValidationError
 
 from app.database import get_database
+from app.auth.deps import require_admin
 from app.schemas.gig_schema import GigCreate, GigUpdate, GigResponse
 from app.services.upload_service import UploadService
 
@@ -65,6 +66,7 @@ async def create_gig(
     featured: bool = Form(False),
     image: Optional[UploadFile] = File(None),
     db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     try:
         validation = GigCreate(
@@ -126,6 +128,7 @@ async def update_gig(
     featured: Optional[bool] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid gig ID format")
@@ -165,7 +168,9 @@ async def update_gig(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_gig(id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def delete_gig(id: str, db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
+):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid gig ID format")
     result = await db["gigs"].delete_one({"_id": ObjectId(id)})

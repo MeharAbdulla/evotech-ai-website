@@ -7,6 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import ValidationError
 
 from app.database import get_database
+from app.auth.deps import require_admin
 from app.schemas.service_schema import ServiceCreate, ServiceUpdate, ServiceResponse
 from app.services.upload_service import UploadService
 
@@ -63,6 +64,7 @@ async def create_service(
     sort_order: int = Form(0),
     image: Optional[UploadFile] = File(None),
     db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     try:
         validation = ServiceCreate(
@@ -121,6 +123,7 @@ async def update_service(
     sort_order: Optional[int] = Form(None),
     image: Optional[UploadFile] = File(None),
     db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
 ):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid service ID format")
@@ -159,7 +162,9 @@ async def update_service(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_service(id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def delete_service(id: str, db: AsyncIOMotorDatabase = Depends(get_database),
+    _admin: dict = Depends(require_admin),
+):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid service ID format")
     result = await db["services"].delete_one({"_id": ObjectId(id)})

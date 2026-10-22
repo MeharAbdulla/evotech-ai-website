@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import authService from '../services/authService';
 
 export default function Login() {
-  const navigate = useNavigate();
-  
   // Controlled form states
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +9,12 @@ export default function Login() {
   // UI Status Management States
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      window.location.assign('/admin/dashboard');
+    }
+  }, []);
 
   // Form submission runtime orchestrator
   const handleSubmit = async (e) => {
@@ -22,7 +25,9 @@ export default function Login() {
     try {
       const response = await authService.login(username, password);
       if (response && response.success) {
-        navigate('/admin/dashboard', { replace: true });
+        // Hard navigation so RR mismatch cannot leave user stuck on login
+        window.location.assign('/admin/dashboard');
+        return;
       }
     } catch (err) {
       setError(err.message || 'Authentication failed. Please verify credentials.');
@@ -42,7 +47,7 @@ export default function Login() {
             Secure Terminal
           </span>
           <h1 className="text-lg font-bold tracking-wider text-slate-100 uppercase">
-            EVOTECH AI
+            AEROMEK
           </h1>
         </div>
 
@@ -55,7 +60,7 @@ export default function Login() {
             </label>
             <input
               type="text"
-              placeholder="admin"
+              placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value.trimStart())}
               disabled={loading}

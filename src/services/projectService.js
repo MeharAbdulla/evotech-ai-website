@@ -1,25 +1,29 @@
 import apiClient from './apiClient';
+import { pcbProjects } from '../data/pcbProjects';
+import { cvProjects } from '../data/cvProjects';
+import { aiProjects } from '../data/aiProjects';
+
+const staticProjects = [...cvProjects, ...aiProjects, ...pcbProjects];
 
 /**
  * Public Project Service
- * Handles read-only data operations for the public-facing application.
+ * Merges API projects with CV (first), AI agent, and proprietary PCB catalogs.
  */
 const projectService = {
-  /**
-   * Fetch all project records from the cluster repository.
-   * @returns {Promise<Array>} Array of project entities.
-   */
   getProjects: async () => {
-    const response = await apiClient.get('/projects/');
-    return Array.isArray(response.data) ? response.data : [];
+    try {
+      const response = await apiClient.get('/projects/');
+      const apiProjects = Array.isArray(response.data) ? response.data : [];
+      return [...staticProjects, ...apiProjects];
+    } catch (err) {
+      return [...staticProjects];
+    }
   },
 
-  /**
-   * Fetch a single project structure by its unique identifier.
-   * @param {string} id - The target project object ID.
-   * @returns {Promise<Object>} The target project entity data block.
-   */
   getProjectById: async (id) => {
+    const local = staticProjects.find((p) => p.id === id);
+    if (local) return local;
+
     const response = await apiClient.get(`/projects/${id}`);
     return response.data;
   }

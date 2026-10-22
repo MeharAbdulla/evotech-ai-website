@@ -220,7 +220,7 @@ export default function ProjectForm({ mode = 'create', initialData, onSubmit, on
               name="live_demo_url"
               value={formData.live_demo_url}
               onChange={handleChange}
-              placeholder="https://demo.evotech.ai"
+              placeholder="https://aeromek.vercel.app"
               className="w-full h-10 px-3 bg-slate-950 text-slate-200 text-sm rounded-lg border border-slate-800 placeholder-slate-700 focus:outline-none focus:border-slate-700 transition-colors"
             />
           </div>
